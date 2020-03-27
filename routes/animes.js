@@ -1,49 +1,46 @@
 const express = require('express')
 const router = express.Router();
 
-//RETORNA TODOS OS EPISODIOS
+//RETORNA TODOS OS ANIMES
 
 router.get('/', (req, res, next) => {
     res.status(200).send({
-        mensagem: 'usando o GET na rotas de episodios'
+        mensagem: 'Retorna os animes'
     })
 })
 
 
-//INSERE UM EPISODIO
+//INSERE UM ANIME
 router.post('/', (req, res, next) => {
     res.status(201).send({
-        mensagem: 'usando o POST na rotas de episodios'
+        mensagem: 'Insere um anime'
     })
 })
 
-//RETORNA OS DADOS DE UM EPISODIO
-router.get('/:id_episodio', (req, res, next) => {
+//RETORNA OS DADOS DE UM ANIME
+router.get('/:id_animes', (req, res, next) => {
     const id = req.params.id_episodio
     if (id === 'especial') {
         res.status(200).send({
-            mensagem: 'usando o GET para pega um episodio específico',
+            mensagem: 'Retorna dados de um anime específico',
             id: id
         })
     } else {
         res.status(200).send({
-            mensagem: 'usando o GET para pegar qualquer episodio'
+            mensagem: 'Retorna dados de um anime específico qualquer'
         })
     }
 })
 
-//ALTERA UM EPISODIO
 router.patch('/', (req, res, next) => {
     res.status(201).send({
-        mensagem: 'usando o PATCH na rotas de episodios'
+        mensagem: 'Altera os dados de um episódio'
     })
 })
 
-//DELETA UM EPISODIO
-
 router.delete('/', (req, res, next) => {
     res.status(201).send({
-        mensagem: 'usando o DELETE na rotas de episodios'
+        mensagem: 'Deleta um episódio'
     })
 })
 
