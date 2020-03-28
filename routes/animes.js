@@ -12,8 +12,14 @@ router.get('/', (req, res, next) => {
 
 //INSERE UM ANIME
 router.post('/', (req, res, next) => {
+    const anime = {
+        id: req.body.id,
+        title: req.body.title,
+        description: req.body.description
+    }
     res.status(201).send({
-        mensagem: 'Insere um anime'
+        mensagem: 'Insere um anime',
+        animeCriado: anime
     })
 })
 

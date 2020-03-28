@@ -12,8 +12,15 @@ router.get('/', (req, res, next) => {
 
 //INSERE UM EPISODIO
 router.post('/', (req, res, next) => {
+    const episodio = {
+        id: req.body.id,
+        title: req.body.title,
+        description: req.body.description
+    }
+
     res.status(201).send({
-        mensagem: 'usando o POST na rotas de episodios'
+        mensagem: 'usando o POST na rotas de episodios',
+        episodioCriado: episodio
     })
 })
 
