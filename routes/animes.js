@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router();
+const mysql = require('../mysql').pool
 
 //RETORNA TODOS OS ANIMES
 
@@ -12,14 +13,25 @@ router.get('/', (req, res, next) => {
 
 //INSERE UM ANIME
 router.post('/', (req, res, next) => {
-    const anime = {
-        id: req.body.id,
-        title: req.body.title,
-        description: req.body.description
-    }
-    res.status(201).send({
-        mensagem: 'Insere um anime',
-        animeCriado: anime
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'INSERT INTO animes (title, description) VALUES (?, ?)',
+            [req.body.title, req.body.description],
+            (err, results, fields) => {
+                connection.release();
+                if (err) {
+                    return res.status(500).send({
+                        error: err,
+                        response: null
+                    })
+                }
+                res.status(201).send({
+                    mensagem: 'Anime adicionado com sucesso',
+                    id_anime: results.insertId
+                })
+            }
+        )
     })
 })
 

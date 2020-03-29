@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router();
+const mysql = require('../mysql').pool
+
 
 //RETORNA TODOS OS EPISODIOS
 
@@ -12,16 +14,27 @@ router.get('/', (req, res, next) => {
 
 //INSERE UM EPISODIO
 router.post('/', (req, res, next) => {
-    const episodio = {
-        id: req.body.id,
-        title: req.body.title,
-        description: req.body.description
-    }
-
-    res.status(201).send({
-        mensagem: 'usando o POST na rotas de episodios',
-        episodioCriado: episodio
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'INSERT INTO episodios (title, description, animes_idanimes) VALUES (?, ?, ?)',
+            [req.body.title, req.body.description, req.body.idanime],
+            (err, results, fields) => {
+                connection.release();
+                if (err) {
+                    return res.status(500).send({
+                        error: err,
+                        response: null
+                    })
+                }
+                res.status(201).send({
+                    mensagem: 'Episodio adicionado com sucesso!',
+                    id_episodio: results.insertId
+                })
+            }
+        )
     })
+
 })
 
 //RETORNA OS DADOS DE UM EPISODIO
