@@ -3,7 +3,6 @@ const router = express.Router();
 const mysql = require('../mysql').pool
 
 //RETORNA TODOS OS ANIMES
-
 router.get('/', (req, res, next) => {
     mysql.getConnection((err, connection) => {
         if (err) throw err;
@@ -22,7 +21,7 @@ router.get('/', (req, res, next) => {
 })
 
 
-//INSERE UM ANIME
+//INSERE UM ANIME ESPECÍFICO
 router.post('/', (req, res, next) => {
     mysql.getConnection((err, connection) => {
         if (err) throw err;
@@ -46,7 +45,7 @@ router.post('/', (req, res, next) => {
     })
 })
 
-//RETORNA OS DADOS DE UM ANIME
+//RETORNA OS DADOS DE UM ANIME ESPECÍFICO
 router.get('/:id_animes', (req, res, next) => {
     const id = req.params.id_animes
     mysql.getConnection((err, connection) => {
@@ -66,15 +65,50 @@ router.get('/:id_animes', (req, res, next) => {
     })
 })
 
+//ALTERA UM ANIME ESPECÍFICO
 router.patch('/', (req, res, next) => {
-    res.status(201).send({
-        mensagem: 'Altera os dados de um episódio'
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+
+        connection.query(
+            `UPDATE ANIMES SET title = ?, description = ? WHERE idanimes = ?`,
+            [req.body.title, req.body.description, req.body.id_animes],
+            (err, results, field) => {
+                connection.release();
+                if (err) throw err;
+
+                res.status(202).send({
+                    mensagem: 'Anime específico alterado.',
+                    response: results
+                })
+            }
+        )
     })
 })
 
+//DELETA UM ANIME ESPECÍFICO
 router.delete('/', (req, res, next) => {
-    res.status(201).send({
-        mensagem: 'Deleta um episódio'
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+
+        connection.query(
+            'DELETE FROM animes WHERE idanimes = ?',
+            [req.body.id_animes],
+            (err, results, fields) => {
+                if (err) throw err;
+                if (results.affectedRows !== 0) {
+                    res.status(202).send({
+                        mensagem: 'Anime excluído.',
+                        response: results
+                    })
+                } else {
+                    res.status(202).send({
+                        mensagem: 'Anime inexistente.',
+                        response: results
+                    })
+                }
+            }
+        )
     })
 })
 

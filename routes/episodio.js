@@ -23,7 +23,7 @@ router.get('/', (req, res, next) => {
 })
 
 
-//INSERE UM EPISODIO
+//INSERE UM EPISODIO ESPECÍFICO
 router.post('/', (req, res, next) => {
     mysql.getConnection((err, connection) => {
         if (err) throw err;
@@ -63,20 +63,52 @@ router.get('/:id_episodio', (req, res, next) => {
     })
 })
 
-//ALTERA UM EPISODIO
+//ALTERA UM EPISODIO ESPECÍFICO
 router.patch('/', (req, res, next) => {
-    res.status(201).send({
-        mensagem: 'usando o PATCH na rotas de episodios'
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+
+        connection.query(
+            `UPDATE EPISODIOS SET title = ?, description = ? WHERE idepisodios = ?`,
+            [req.body.title, req.body.description, req.body.id_episodios],
+            (err, results, field) => {
+                connection.release();
+                if (err) throw err;
+
+                res.status(202).send({
+                    mensagem: 'Episodio específico alterado.',
+                    response: results
+                })
+            }
+        )
     })
 })
 
-//DELETA UM EPISODIO
+//DELETA UM EPISODIO ESPECÍFICO
 
 router.delete('/', (req, res, next) => {
-    res.status(201).send({
-        mensagem: 'usando o DELETE na rotas de episodios'
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'DELETE FROM episodios WHERE idepisodios = ?',
+            [req.body.id_episodios],
+            (err, results, fields) => {
+                if (err) throw err;
+                if (results.affectedRows !== 0) {
+                    res.status(202).send({
+                        mensagem: 'Episodio excluído.',
+                        response: results
+                    })
+                } else {
+                    res.status(202).send({
+                        mensagem: 'Episódio inexistente.',
+                        response: results
+                    })
+                }
+
+            }
+        )
     })
 })
-
 
 module.exports = router
