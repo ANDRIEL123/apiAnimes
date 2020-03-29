@@ -5,8 +5,19 @@ const mysql = require('../mysql').pool
 //RETORNA TODOS OS ANIMES
 
 router.get('/', (req, res, next) => {
-    res.status(200).send({
-        mensagem: 'Retorna os animes'
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'SELECT * FROM animes',
+            (err, results, fields) => {
+                if (err) throw err;
+
+                res.status(201).send({
+                    mensagem: 'Retorna todos os animes',
+                    response: results
+                })
+            }
+        )
     })
 })
 
@@ -37,17 +48,22 @@ router.post('/', (req, res, next) => {
 
 //RETORNA OS DADOS DE UM ANIME
 router.get('/:id_animes', (req, res, next) => {
-    const id = req.params.id_episodio
-    if (id === 'especial') {
-        res.status(200).send({
-            mensagem: 'Retorna dados de um anime específico',
-            id: id
-        })
-    } else {
-        res.status(200).send({
-            mensagem: 'Retorna dados de um anime específico qualquer'
-        })
-    }
+    const id = req.params.id_animes
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'SELECT * FROM episodios WHERE idanimes = ?',
+            [id],
+            (err, results, fields) => {
+                if (err) throw err;
+                res.status(201).send({
+                    mensagem: 'Retornando um anime específico',
+                    response: results
+                })
+            }
+        )
+
+    })
 })
 
 router.patch('/', (req, res, next) => {

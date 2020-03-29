@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 })
 
 
-app.use('/episodio', rotaEpisodios);
+app.use('/episodios', rotaEpisodios);
 app.use('/animes', rotaAnimes);
 
 

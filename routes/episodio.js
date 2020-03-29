@@ -6,8 +6,19 @@ const mysql = require('../mysql').pool
 //RETORNA TODOS OS EPISODIOS
 
 router.get('/', (req, res, next) => {
-    res.status(200).send({
-        mensagem: 'usando o GET na rotas de episodios'
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'SELECT * FROM episodios',
+            (err, results, fields) => {
+                if (err) throw err;
+
+                res.status(201).send({
+                    mensagem: 'Retorna todos os episodios',
+                    response: results
+                })
+            }
+        )
     })
 })
 
@@ -21,12 +32,7 @@ router.post('/', (req, res, next) => {
             [req.body.title, req.body.description, req.body.idanime],
             (err, results, fields) => {
                 connection.release();
-                if (err) {
-                    return res.status(500).send({
-                        error: err,
-                        response: null
-                    })
-                }
+                if (err) throw err;
                 res.status(201).send({
                     mensagem: 'Episodio adicionado com sucesso!',
                     id_episodio: results.insertId
@@ -37,19 +43,24 @@ router.post('/', (req, res, next) => {
 
 })
 
-//RETORNA OS DADOS DE UM EPISODIO
+//RETORNA OS DADOS DE UM EPISODIOE ESPECÍFICO
 router.get('/:id_episodio', (req, res, next) => {
     const id = req.params.id_episodio
-    if (id === 'especial') {
-        res.status(200).send({
-            mensagem: 'usando o GET para pega um episodio específico',
-            id: id
-        })
-    } else {
-        res.status(200).send({
-            mensagem: 'usando o GET para pegar qualquer episodio'
-        })
-    }
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+        connection.query(
+            'SELECT * FROM episodios WHERE idepisodios = ?',
+            [id],
+            (err, results, fields) => {
+                if (err) throw err;
+                res.status(201).send({
+                    mensagem: 'Retornando um episodios específico',
+                    response: results
+                })
+            }
+        )
+
+    })
 })
 
 //ALTERA UM EPISODIO
