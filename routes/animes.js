@@ -11,9 +11,21 @@ router.get('/', (req, res, next) => {
             (err, results, fields) => {
                 if (err) throw err;
 
+                const response = results.map(animes => {
+                    return {
+                        id_anime: animes.idanimes,
+                        title: animes.title,
+                        description: animes.description,
+                        request: {
+                            type: 'GET',
+                            url: 'localhost:3000/animes/' + animes.idanimes
+                        }
+                    }
+                })
+
                 res.status(201).send({
                     mensagem: 'Retorna todos os animes',
-                    response: results
+                    response: response
                 })
             }
         )
@@ -36,9 +48,14 @@ router.post('/', (req, res, next) => {
                         response: null
                     })
                 }
-                res.status(201).send({
-                    mensagem: 'Anime adicionado com sucesso',
-                    id_anime: results.insertId
+                res.status(202).send({
+                    mensagem: 'Anime adicionado com sucesso!',
+                    episodio: {
+                        id: results.insertId,
+                        title: req.body.title,
+                        description: req.body.description
+                    }
+
                 })
             }
         )
@@ -51,13 +68,13 @@ router.get('/:id_animes', (req, res, next) => {
     mysql.getConnection((err, connection) => {
         if (err) throw err;
         connection.query(
-            'SELECT * FROM episodios WHERE idanimes = ?',
+            'SELECT * FROM animes WHERE idanimes = ?',
             [id],
             (err, results, fields) => {
                 if (err) throw err;
-                res.status(201).send({
+                res.status(202).send({
                     mensagem: 'Retornando um anime específico',
-                    response: results
+                    response: results[0]
                 })
             }
         )

@@ -13,9 +13,21 @@ router.get('/', (req, res, next) => {
             (err, results, fields) => {
                 if (err) throw err;
 
+                const response = results.map(episodio => {
+                    return {
+                        id_episodio: episodio.idepisodios,
+                        title: episodio.title,
+                        description: episodio.description,
+                        id_animevinculo: episodio.animes_idanimes,
+                        request: {
+                            type: 'GET',
+                            url: 'localhost:3000/episodios/' + episodio.idepisodios
+                        }
+                    }
+                })
                 res.status(201).send({
                     mensagem: 'Retorna todos os episodios',
-                    response: results
+                    response: response
                 })
             }
         )
@@ -33,9 +45,16 @@ router.post('/', (req, res, next) => {
             (err, results, fields) => {
                 connection.release();
                 if (err) throw err;
-                res.status(201).send({
+
+                res.status(202).send({
                     mensagem: 'Episodio adicionado com sucesso!',
-                    id_episodio: results.insertId
+                    episodio: {
+                        id: results.insertId,
+                        title: req.body.title,
+                        description: req.body.description,
+                        id_animeVinculado: req.body.idanime
+                    }
+
                 })
             }
         )
@@ -43,7 +62,7 @@ router.post('/', (req, res, next) => {
 
 })
 
-//RETORNA OS DADOS DE UM EPISODIOE ESPECÍFICO
+//RETORNA OS DADOS DE UM EPISODIO ESPECÍFICO
 router.get('/:id_episodio', (req, res, next) => {
     const id = req.params.id_episodio
     mysql.getConnection((err, connection) => {
