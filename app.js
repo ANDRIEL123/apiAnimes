@@ -12,6 +12,8 @@ app.use(morgan('dev'))
 app.use(bodyParse.urlencoded({ extended: false })) //Apenas dados simples
 app.use(bodyParse.json()) //JSON de entrada no body
 
+
+//Configuração dos CORS
 app.use((req, res, next) => {
     res.header('Acess-Control-Allow-Origin', '*')
     res.header('Acess-Control-Allow-Header',

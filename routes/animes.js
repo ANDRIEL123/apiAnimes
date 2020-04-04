@@ -14,8 +14,8 @@ router.get('/', (req, res, next) => {
                 const response = results.map(animes => {
                     return {
                         id_anime: animes.idanimes,
-                        title: animes.title,
-                        description: animes.description,
+                        title: animes.titleAnime,
+                        description: animes.descriptionAnime,
                         request: {
                             type: 'GET',
                             url: 'localhost:3000/animes/' + animes.idanimes
@@ -38,7 +38,7 @@ router.post('/', (req, res, next) => {
     mysql.getConnection((err, connection) => {
         if (err) throw err;
         connection.query(
-            'INSERT INTO animes (title, description) VALUES (?, ?)',
+            'INSERT INTO animes (titleAnime, descriptionAnime) VALUES (?, ?)',
             [req.body.title, req.body.description],
             (err, results, fields) => {
                 connection.release();
@@ -52,8 +52,8 @@ router.post('/', (req, res, next) => {
                     mensagem: 'Anime adicionado com sucesso!',
                     episodio: {
                         id: results.insertId,
-                        title: req.body.title,
-                        description: req.body.description
+                        title: req.body.titleAnime,
+                        description: req.body.descriptionAnime
                     }
 
                 })
