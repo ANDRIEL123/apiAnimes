@@ -1,10 +1,11 @@
-const express = require('express')
-const app = express()
-const morgan = require('morgan')
-const bodyParse = require('body-parser')
+const express = require('express');
+const app = express();
+const morgan = require('morgan');
+const bodyParse = require('body-parser');
 
-const rotaEpisodios = require('./routes/episodio')
-const rotaAnimes = require('./routes/animes')
+const rotaEpisodios = require('./routes/episodio');
+const rotaAnimes = require('./routes/animes');
+const rotaUsuarios = require('./routes/usuario');
 
 app.use(morgan('dev'))
 
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 app.use('/episodios', rotaEpisodios);
 app.use('/animes', rotaAnimes);
+app.use('/usuarios', rotaUsuarios);
 
 
 // QUANDO NÃO ENCONTRA ROTA, ENTRA AQUI:
