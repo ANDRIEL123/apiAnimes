@@ -9,13 +9,22 @@ router.get('/', (req, res, next) => {
         connection.query(
             'SELECT * FROM animes',
             (err, results, fields) => {
+                connection.release();
                 if (err) throw err;
+                let page;
 
-                const response = results.map(animes => {
+                const response = results.map((animes, index) => {
+                    if ((index / 3) < 1) {
+                        page = 1
+                    } else {
+                        page = parseInt((index / 3) + 1)
+                    }
+
                     return {
                         id_anime: animes.idanimes,
                         title: animes.titleAnime,
                         description: animes.descriptionAnime,
+                        page: page,
                         request: {
                             type: 'GET',
                             url: 'localhost:3000/animes/' + animes.idanimes
@@ -23,7 +32,7 @@ router.get('/', (req, res, next) => {
                     }
                 })
 
-                res.status(201).send({
+                res.status(200).send({
                     mensagem: 'Retorna todos os animes',
                     response: response
                 })
@@ -71,6 +80,7 @@ router.get('/:id_animes', (req, res, next) => {
             'SELECT * FROM animes WHERE idanimes = ?',
             [id],
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
                 res.status(202).send({
                     mensagem: 'Retornando um anime específico',
@@ -112,6 +122,7 @@ router.delete('/', (req, res, next) => {
             'DELETE FROM animes WHERE idanimes = ?',
             [req.body.id_animes],
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
                 if (results.affectedRows !== 0) {
                     res.status(202).send({

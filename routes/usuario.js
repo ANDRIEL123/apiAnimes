@@ -9,6 +9,7 @@ router.get('/', (req, res, next) => {
         connection.query(
             'SELECT * FROM usuarios',
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
 
                 res.status(201).send({
@@ -31,6 +32,7 @@ router.get('/:id_usuario', (req, res, next) => {
               WHERE usuarios.idusuarios = ?`,
             [req.params.id_usuario],
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
                 res.status(201).send({
                     mensagem: 'Retornando um usuario específico',
@@ -54,7 +56,7 @@ router.post('/', (req, res, next) => {
             [req.body.nome, req.body.user, req.body.password],
             (err, results, fields) => {
                 if (err) throw err;
-
+                connection.release()
                 res.status(201).send({
                     message: 'Incluido com sucesso!',
                     response: results
@@ -77,6 +79,7 @@ router.patch('/:id_episodio', (req, res, next) => {
               WHERE idusuarios = ?`,
             [req.body.nome, req.body.user, req.body.password, req.params.id_episodio],
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
 
                 res.status(201).send({
@@ -102,6 +105,7 @@ router.delete('/:id_usuario', (req, res, next) => {
               WHERE idusuarios = ?`,
             [req.params.id_usuario],
             (err, results, fields) => {
+                connection.release()
                 if (err) {
                     console.log('Erro ao deletar!');
                     throw err;

@@ -78,7 +78,7 @@ router.get('/', (req, res, next) => {
                  ON e.animes_idanimes = a.idanimes;`,
             (err, results, fields) => {
                 if (err) throw err;
-
+                connection.release()
                 episodios = results.map(episodios => {
                     return {
                         idEpisodio: episodios.idepisodios,
@@ -152,6 +152,7 @@ router.get('/:id_episodio', (req, res, next) => {
               WHERE e.idepisodios = ${id}`,
             [id],
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
                 res.status(201).send({
                     mensagem: 'Retornando um episodios específico',
@@ -193,6 +194,7 @@ router.delete('/', (req, res, next) => {
             'DELETE FROM episodios WHERE idepisodios = ?',
             [req.body.id_episodios],
             (err, results, fields) => {
+                connection.release()
                 if (err) throw err;
                 if (results.affectedRows !== 0) {
                     res.status(202).send({
