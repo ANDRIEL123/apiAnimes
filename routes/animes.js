@@ -120,24 +120,36 @@ router.delete('/:id_animes', (req, res, next) => {
         if (err) throw err;
 
         connection.query(
+            `DELETE FROM episodios WHERE animes_idanimes = ?`,
+            [req.params.id_animes],
+            (err, results, fields) => {
+                connection.release()
+                if (err) throw err;
+
+                console.log(results)
+            }
+        )
+
+
+    })
+
+    mysql.getConnection((err, connection) => {
+        if (err) throw err;
+
+        connection.query(
             `DELETE FROM animes WHERE idanimes = ?`,
             [req.params.id_animes],
             (err, results, fields) => {
                 connection.release()
                 if (err) throw err;
-                if (results.affectedRows !== 0) {
-                    res.status(202).send({
-                        mensagem: 'Anime excluído.',
-                        response: results
-                    })
-                } else {
-                    res.status(202).send({
-                        mensagem: 'Anime inexistente.',
-                        response: results
-                    })
-                }
+                res.status(202).send({
+                    mensagem: 'Anime excluído.',
+                    response: results
+                })
             }
         )
+
+
     })
 })
 
