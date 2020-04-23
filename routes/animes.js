@@ -57,7 +57,7 @@ router.post('/', (req, res, next) => {
                         response: null
                     })
                 }
-                res.status(202).send({
+                res.status(200).send({
                     mensagem: 'Anime adicionado com sucesso!',
                     episodio: {
                         id: results.insertId,
@@ -93,13 +93,13 @@ router.get('/:id_animes', (req, res, next) => {
 })
 
 //ALTERA UM ANIME ESPECÍFICO
-router.patch('/', (req, res, next) => {
+router.patch('/:id_animes', (req, res, next) => {
     mysql.getConnection((err, connection) => {
         if (err) throw err;
 
         connection.query(
             `UPDATE ANIMES SET title = ?, description = ? WHERE idanimes = ?`,
-            [req.body.title, req.body.description, req.body.id_animes],
+            [req.body.title, req.body.description, req.params.id_animes],
             (err, results, field) => {
                 connection.release();
                 if (err) throw err;
@@ -114,13 +114,14 @@ router.patch('/', (req, res, next) => {
 })
 
 //DELETA UM ANIME ESPECÍFICO
-router.delete('/', (req, res, next) => {
+router.delete('/:id_animes', (req, res, next) => {
+
     mysql.getConnection((err, connection) => {
         if (err) throw err;
 
         connection.query(
-            'DELETE FROM animes WHERE idanimes = ?',
-            [req.body.id_animes],
+            `DELETE FROM animes WHERE idanimes = ?`,
+            [req.params.id_animes],
             (err, results, fields) => {
                 connection.release()
                 if (err) throw err;
