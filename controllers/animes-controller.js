@@ -1,129 +1,103 @@
-const mysql = require('../mysql').pool
+const mysql = require('../mysql')
 
 
-exports.getAnimes = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            'SELECT * FROM animes',
-            (err, results, fields) => {
-                connection.release();
-                if (err) throw err;
-                let page;
+exports.getAnimes = async (req, res, next) => {
+    try {
+        const results = await mysql.execute("SELECT * FROM ANIMES")
 
-                const response = results.map((animes, index) => {
-                    if ((index / 3) < 1) {
-                        page = 1
-                    } else {
-                        page = parseInt((index / 3) + 1)
-                    }
+        let page;
 
-                    return {
-                        id_anime: animes.idanimes,
-                        title: animes.titleAnime,
-                        description: animes.descriptionAnime,
-                        page: page,
-                        request: {
-                            type: 'GET',
-                            url: 'localhost:3000/animes/' + animes.idanimes
-                        }
-                    }
-                })
-
-                res.status(200).send({
-                    mensagem: 'Retorna todos os animes',
-                    response: response
-                })
+        const response = results.map((animes, index) => {
+            if ((index / 3) < 1) {
+                page = 1
+            } else {
+                page = parseInt((index / 3) + 1)
             }
-        )
-    })
-}
 
-exports.postAnime = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            'INSERT INTO animes (titleAnime, descriptionAnime) VALUES (?, ?)',
-            [req.body.title, req.body.description],
-            (err, results, fields) => {
-                connection.release();
-                if (err) {
-                    return res.status(500).send({
-                        error: err,
-                        response: null
-                    })
+            return {
+                id_anime: animes.idanimes,
+                title: animes.titleAnime,
+                description: animes.descriptionAnime,
+                page: page,
+                request: {
+                    type: 'GET',
+                    url: 'localhost:3000/animes/' + animes.idanimes
                 }
-                res.status(200).send({
-                    mensagem: 'Anime adicionado com sucesso!',
-                    episodio: {
-                        id: results.insertId,
-                        title: req.body.titleAnime,
-                        description: req.body.descriptionAnime
-                    }
-
-                })
             }
-        )
-    })
+        })
+
+        return res.status(200).send({
+            mensagem: 'Retorna todos os animes',
+            response: response
+        })
+
+    } catch (error) {
+        return res.status(500).send({ error: error })
+    }
+
 }
 
-exports.getAnimeEspecifico = (req, res, next) => {
-    const id = req.params.id_animes
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            'SELECT * FROM animes WHERE idanimes = ?',
-            [id],
-            (err, results, fields) => {
-                connection.release()
-                if (err) throw err;
-                res.status(202).send({
-                    mensagem: 'Retornando um anime específico',
-                    response: results[0]
-                })
+exports.postAnime = async (req, res, next) => {
+    try {
+        const results = await mysql.execute('INSERT INTO animes (titleAnime, descriptionAnime) VALUES (?, ?)',
+            [req.body.title, req.body.description]);
+        res.status(200).send({
+            mensagem: 'Anime adicionado com sucesso!',
+            episodio: {
+                id: results.insertId,
+                title: req.body.title,
+                description: req.body.description
             }
-        )
-
-    })
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
 
-exports.patchAnimeEspecifico = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
+exports.getAnimeEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute('SELECT * FROM animes WHERE idanimes = ?',
+            req.params.id_animes)
 
-        connection.query(
-            `UPDATE ANIMES 
-            SET titleAnime = ?, descriptionAnime = ? 
-            WHERE idanimes = ?`,
-            [req.body.title, req.body.description, req.params.id_animes],
-            (err, results, field) => {
-                connection.release();
-                if (err) throw err;
-
-                res.status(202).send({
-                    mensagem: 'Anime específico alterado.',
-                    response: results
-                })
-            }
-        )
-    })
+        res.status(200).send({
+            mensagem: 'Retornando um anime específico',
+            response: results[0]
+        })
+    } catch (error) {
+        res.status(500).send({
+            error: error
+        })
+    }
 }
 
-exports.deleteAnimeEspecifico = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
+exports.patchAnimeEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`UPDATE ANIMES 
+                                                SET titleAnime = ?, descriptionAnime = ? 
+                                              WHERE idanimes = ?`,
+            [req.body.title, req.body.description, req.params.id_animes]);
 
-        connection.query(
-            `DELETE FROM animes WHERE idanimes = ?`,
-            [req.params.id_animes],
-            (err, results, fields) => {
-                connection.release()
-                if (err) throw err;
-                res.status(202).send({
-                    mensagem: 'Anime excluído.',
-                    response: results
-                })
-            }
-        )
-    })
+        res.status(200).send({
+            mensagem: 'Anime específico alterado.',
+            response: results
+        })
+    } catch (error) {
+        res.status(500).send({
+            error: error
+        })
+    }
+}
+
+exports.deleteAnimeEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`DELETE FROM animes WHERE idanimes = ?`,
+            [req.params.id_animes])
+
+        res.status(200).send({
+            mensagem: 'Anime excluído.',
+            response: results
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
