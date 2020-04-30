@@ -10,4 +10,18 @@ var pool = mysql.createPool({
     "port": process.env.MYSQL_PORT
 })
 
+exports.execute = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+        pool.query(query, params, (error, result, field) => {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(result);
+
+            }
+        })
+    })
+}
+
 exports.pool = pool;
