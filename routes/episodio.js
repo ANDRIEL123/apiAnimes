@@ -1,16 +1,17 @@
 const express = require('express')
 const router = express.Router();
 const episodioController = require('../controllers/episodio-controller')
-
+const uploadImgMulter = require('./metodos/multerUploadImgs').upload
 
 
 //RETORNA TODOS OS EPISODIOS
 router.get('/', episodioController.getEpisodios)
 
+/* INSERE UM EPISODIO ESPECÍFICO
+   OBS: DENTRO DA ROTA DA PASSAR QUALQUER COISA, NO CASO DESTE POST FOI PASSADO
+   O METODO UPLOAD DO MULTER PARA REALIZAR UPLOAD DE IMAGENS */
 
-//INSERE UM EPISODIO ESPECÍFICO
-
-router.post('/', episodioController.postEpisodio)
+router.post('/', uploadImgMulter.single('imgEpisodio'), episodioController.postEpisodio)
 
 //RETORNA OS DADOS DE UM EPISODIO ESPECÍFICO
 router.get('/:id_episodio', episodioController.getEpisodioEspecifico)

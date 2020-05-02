@@ -1,73 +1,12 @@
 const mysql = require('../mysql')
-const multer = require('multer')
-const date = new Date();
 
 
-//METODO PARA FORMATAR A DATA ATUAL
-const dataFormatada = () => {
-    let day = date.getDay()
-    let month = date.getMonth()
-    let year = date.getFullYear()
-    if (day < 10) {
-        day = '0' + day
-    }
-    if (month < 10) {
-        month = '0' + month
-    }
-    return `${day}-${month}-${year}`
-}
-
-//METODO PARA FORMATAR A HORA ATUAL
-const horaFormatada = () => {
-    let hours = date.getHours()
-    let minutes = date.getMinutes()
-    let seconds = date.getSeconds()
-
-    if (hours < 10) {
-        hours = '0' + hours
-    }
-
-    if (minutes < 10) {
-        minutes = '0' + minutes
-    }
-
-    if (seconds < 10) {
-        seconds = '0' + seconds
-    }
-
-    return `${hours}-${minutes}-${seconds}`
-}
-
-//MANIUPULAÇÃO DO LOCAL DO ARQUIVO E NOME QUE O MESMO TERÁ
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, dataFormatada() + '-' + horaFormatada() + '-' + file.originalname)
-    }
-})
-
-//FILTRO DOS TIPOS ACEITOS DE EXTENSÕES DE ARQUIVO
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-        cb(null, true);
-    } else {
-        cb(null, false)
-    }
-}
-
-//UPLOAD DO ARQUIVO
-const upload = multer({
-    storage: storage, //LOCAL PARA SALVAR E NOME
-    fileFilter: fileFilter //FILTRO DE TIPO
-})
 
 exports.getEpisodios = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT e.idepisodios, 
                                                  e.titleEpisodio,
-                                                 e.key,
+                                                 e.key_episodio,
                                                  a.idanimes, 
                                                  a.titleAnime
                                             FROM episodios e
@@ -99,15 +38,15 @@ exports.getEpisodios = async (req, res, next) => {
 
 }
 
-exports.postEpisodio = upload.single('imgEpisodio'), async (req, res, next) => {
+exports.postEpisodio = async (req, res, next) => {
     try {
-        const results = await mysql.execute(`INSERT INTO episodios 
-                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, key, imgEpisodio) 
+        const results = await mysql.execute(`INSERT INTO episodios
+                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, key_episodio, imgEpisodio)
                                             VALUES (?, ?, ?, ?, ?)`,
             [req.body.titleEpisodio,
             req.body.descriptionEpisodio,
             req.body.idanime,
-            req.body.key,
+            req.body.key_episodio,
             req.file.path])
 
         res.status(200).send({
@@ -129,7 +68,7 @@ exports.getEpisodioEspecifico = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT e.idepisodios,
                                                     e.titleEpisodio,
-                                                    e.key,
+                                                    e.key_episodio,
                                                     a.idanimes,
                                                     a.titleAnime
                                                FROM episodios e
