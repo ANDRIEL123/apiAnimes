@@ -1,6 +1,7 @@
-const mysql = require('../mysql').pool
+const mysql = require('../mysql')
 const multer = require('multer')
 const date = new Date();
+
 
 //METODO PARA FORMATAR A DATA ATUAL
 const dataFormatada = () => {
@@ -62,143 +63,122 @@ const upload = multer({
     fileFilter: fileFilter //FILTRO DE TIPO
 })
 
-exports.getEpisodios = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            `SELECT e.idepisodios, 
-                    e.titleEpisodio,
-                    e.key,
-                    a.idanimes, 
-                    a.titleAnime
-               FROM episodios e
-         INNER JOIN animes a
-                 ON e.animes_idanimes = a.idanimes;`,
-            (err, results, fields) => {
-                if (err) throw err;
-                connection.release()
-                episodios = results.map(episodios => {
-                    return {
-                        idEpisodio: episodios.idepisodios,
-                        titleEpisodios: episodios.titleEpisodios,
-                        idanimes: episodios.idanimes,
-                        titleAnimes: episodios.titleAnimes,
-                        key: episodios.key,
-                        request: {
-                            type: "GET",
-                            urlEpisodios: `localhost:3000/episodios/${episodios.idepisodios}`
-                        }
-                    }
-                })
-                res.status(201).send({
-                    mensagem: 'Retorna todos os episodios',
-                    response: episodios
+exports.getEpisodios = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`SELECT e.idepisodios, 
+                                                 e.titleEpisodio,
+                                                 e.key,
+                                                 a.idanimes, 
+                                                 a.titleAnime
+                                            FROM episodios e
+                                      INNER JOIN animes a
+                                              ON e.animes_idanimes = a.idanimes;`)
 
-                })
+
+        const episodios = results.map(episodios => {
+            return {
+                idEpisodio: episodios.idepisodios,
+                titleEpisodios: episodios.titleEpisodios,
+                idanimes: episodios.idanimes,
+                titleAnimes: episodios.titleAnimes,
+                key: episodios.key,
+                request: {
+                    type: "GET",
+                    urlEpisodios: `localhost:3000/episodios/${episodios.idepisodios}`
+                }
             }
-        )
-    })
+        })
+        res.status(200).send({
+            mensagem: 'Retorna todos os episodios',
+            response: episodios
+
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
+
 }
 
-exports.postEpisodio = upload.single('imgEpisodio'), (req, res, next) => {
-    console.log(req.file)
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            `INSERT INTO episodios 
-            (titleEpisodio, descriptionEpisodio, animes_idanimes, key, imgEpisodio) 
-            VALUES (?, ?, ?, ?, ?)`,
+exports.postEpisodio = upload.single('imgEpisodio'), async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`INSERT INTO episodios 
+                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, key, imgEpisodio) 
+                                            VALUES (?, ?, ?, ?, ?)`,
             [req.body.titleEpisodio,
             req.body.descriptionEpisodio,
             req.body.idanime,
             req.body.key,
-            req.file.path],
-            (err, results, fields) => {
-                connection.release();
-                if (err) throw err;
+            req.file.path])
 
-                res.status(202).send({
-                    mensagem: 'Episodio adicionado com sucesso!',
-                    episodio: {
-                        id: results.insertId,
-                        title: req.body.titleEpisodio,
-                        description: req.body.descriptionEpisodio,
-                        id_animeVinculado: req.body.idanime
-                    }
-
-                })
+        res.status(200).send({
+            mensagem: 'Episodio adicionado com sucesso!',
+            episodio: {
+                id: results.insertId,
+                title: req.body.titleEpisodio,
+                description: req.body.descriptionEpisodio,
+                id_animeVinculado: req.body.idanime
             }
-        )
-    })
+
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
 
-exports.getEpisodioEspecifico = (req, res, next) => {
-    const id = req.params.id_episodio
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            `SELECT e.idepisodios,
-                    e.titleEpisodio,
-                    e.key,
-                    a.idanimes,
-                    a.titleAnime
-               FROM episodios e
-         INNER JOIN animes a
-                 ON e.animes_idanimes = a.idanimes
-              WHERE e.idepisodios = ${id}`,
-            (err, results, fields) => {
-                connection.release()
-                if (err) throw err;
-                res.status(201).send({
-                    mensagem: 'Retornando um episodios específico',
-                    response: results[0]
-                })
-            }
-        )
-    })
+exports.getEpisodioEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`SELECT e.idepisodios,
+                                                    e.titleEpisodio,
+                                                    e.key,
+                                                    a.idanimes,
+                                                    a.titleAnime
+                                               FROM episodios e
+                                         INNER JOIN animes a
+                                                 ON e.animes_idanimes = a.idanimes
+                                              WHERE e.idepisodios = ${req.params.id_episodio}`)
+
+        res.status(200).send({
+            mensagem: 'Retornando um episodios específico',
+            response: results[0]
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
+
 }
 
-exports.patchEpisodioEspecifico = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
 
-        connection.query(
-            `UPDATE EPISODIOS SET title = ?, description = ? WHERE idepisodios = ?`,
-            [req.body.title, req.body.description, req.body.id_episodios],
-            (err, results, field) => {
-                connection.release();
-                if (err) throw err;
+exports.patchEpisodioEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`UPDATE EPISODIOS SET title = ?, description = ? WHERE idepisodios = ?`,
+            [req.body.title, req.body.description, req.body.id_episodios])
 
-                res.status(202).send({
-                    mensagem: 'Episodio específico alterado.',
-                    response: results
-                })
-            }
-        )
-    })
+        res.status(200).send({
+            mensagem: 'Episodio específico alterado.',
+            response: results
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
 
-exports.deleteEpisodioEspecifico = (req, res, next) => {
-    mysql.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(
-            'DELETE FROM episodios WHERE idepisodios = ?',
-            [req.body.id_episodios],
-            (err, results, fields) => {
-                connection.release()
-                if (err) throw err;
-                if (results.affectedRows !== 0) {
-                    res.status(202).send({
-                        mensagem: 'Episodio excluído.',
-                        response: results
-                    })
-                } else {
-                    res.status(202).send({
-                        mensagem: 'Episódio inexistente.',
-                        response: results
-                    })
-                }
-            }
-        )
-    })
+
+exports.deleteEpisodioEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute('DELETE FROM episodios WHERE idepisodios = ?',
+            [req.body.id_episodios])
+        if (results.affectedRows !== 0) {
+            res.status(200).send({
+                mensagem: 'Episodio excluído.',
+                response: results
+            })
+        } else {
+            res.status(200).send({
+                mensagem: 'Episódio inexistente.',
+                response: results
+            })
+        }
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
