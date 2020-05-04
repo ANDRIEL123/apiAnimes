@@ -15,24 +15,8 @@ app.use(bodyParse.json()) //JSON de entrada no body
 
 
 //Configuração dos CORS libera todos
-app.use(cors())
+app.use(cors(/*origin = "http://localhost:3001/" */))
 
-//CORS ESPECÍFICO NÃO FUNCIONANDO...
-/*
-app.use((req, res, next) => {
-    res.header('Acess-Control-Allow-Origin', '*')
-    res.header('Acess-Control-Allow-Header',
-        'Origin, X-Requrested-With, Content-Type, Accept, Authorization'
-    )
-
-    if (req.method === 'OPTIONS') {
-        res.header('Acess-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET')
-        return res.status(200).send({});
-    }
-
-    next();
-})
-*/
 
 app.use('/episodios', rotaEpisodios);
 app.use('/animes', rotaAnimes);

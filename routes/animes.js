@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const AnimesController = require('../controllers/animes-controller');
+const uploadImgMulter = require('./metodos/multerUploadImgs')
 
 //RETORNA TODOS OS ANIMES
 router.get('/', AnimesController.getAnimes)
@@ -9,7 +10,7 @@ router.get('/', AnimesController.getAnimes)
 router.get('/:id_animes', AnimesController.getAnimeEspecifico)
 
 //INSERE UM ANIME ESPECÍFICO
-router.post('/', AnimesController.postAnime)
+router.post('/', uploadImgMulter.upload.single('imgAnime'), AnimesController.postAnime)
 
 //ALTERA UM ANIME ESPECÍFICO
 router.patch('/:id_animes', AnimesController.patchAnimeEspecifico)

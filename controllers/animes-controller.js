@@ -39,8 +39,10 @@ exports.getAnimes = async (req, res, next) => {
 
 exports.postAnime = async (req, res, next) => {
     try {
-        const results = await mysql.execute('INSERT INTO animes (titleAnime, descriptionAnime) VALUES (?, ?)',
-            [req.body.title, req.body.description]);
+        const results = await mysql.execute(`INSERT INTO animes 
+                                            (titleAnime, descriptionAnime, imgAnime) 
+                                            VALUES (?, ?, ?)`,
+            [req.body.titleAnime, req.body.descriptionAnime, req.file.path]);
         res.status(200).send({
             mensagem: 'Anime adicionado com sucesso!',
             episodio: {
