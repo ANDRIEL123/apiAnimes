@@ -19,7 +19,7 @@ router.post('/', uploadImgMulter.single('imgEpisodio'), episodioController.postE
 router.get('/:id_episodio', episodioController.getEpisodioEspecifico)
 
 //ALTERA UM EPISODIO ESPECÍFICO
-router.patch('/', episodioController.patchEpisodioEspecifico)
+router.patch('/', uploadImgMulter.single('imgEpisodio'), episodioController.patchEpisodioEspecifico)
 
 //DELETA UM EPISODIO ESPECÍFICO
 router.delete('/', episodioController.deleteEpisodioEspecifico)

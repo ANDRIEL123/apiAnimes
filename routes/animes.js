@@ -13,7 +13,7 @@ router.get('/:id_animes', AnimesController.getAnimeEspecifico)
 router.post('/', uploadImgMulter.upload.single('imgAnime'), AnimesController.postAnime)
 
 //ALTERA UM ANIME ESPECÍFICO
-router.patch('/:id_animes', AnimesController.patchAnimeEspecifico)
+router.patch('/:id_animes', uploadImgMulter.upload.single('imgAnime'), AnimesController.patchAnimeEspecifico)
 
 //DELETA UM ANIME ESPECÍFICO
 router.delete('/:id_animes', AnimesController.deleteAnimeEspecifico)

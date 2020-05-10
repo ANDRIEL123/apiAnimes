@@ -85,10 +85,15 @@ exports.getAnimeEspecifico = async (req, res, next) => {
 
 exports.patchAnimeEspecifico = async (req, res, next) => {
     try {
+        /* AQUI É DIVIDO O CAMINHO DE UPLOAD DA IMAGEM PARA ARMAZENAR NO BANCO, 
+        EXEMPLO: uploads\\anime.png, aplicando o método abaixo retorna 2 string em
+        um array ficando uploads na posição e anime.png na posição 1, logo só
+        preciso pegar a posição 1 como abaixo no 4 parâmetro passado na query */
+        filterPath = req.file.path.split('\\');
         const results = await mysql.execute(`UPDATE ANIMES 
-                                                SET titleAnime = ?, descriptionAnime = ?, keyAnime = ? 
+                                                SET titleAnime = ?, descriptionAnime = ?, keyAnime = ?, imgAnime = ? 
                                               WHERE idanimes = ?`,
-            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, req.params.id_animes]);
+            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, filterPath[1], req.params.id_animes]);
 
         res.status(200).send({
             mensagem: 'Anime específico alterado.',
