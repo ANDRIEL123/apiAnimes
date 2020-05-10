@@ -21,6 +21,7 @@ app.use(cors(/*origin = "http://localhost:3001/" */))
 app.use('/episodios', rotaEpisodios);
 app.use('/animes', rotaAnimes);
 app.use('/usuarios', rotaUsuarios);
+app.use('/uploads', express.static('uploads'))
 
 
 // QUANDO NÃO ENCONTRA ROTA, ENTRA AQUI:

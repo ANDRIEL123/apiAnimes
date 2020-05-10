@@ -22,5 +22,6 @@ const fileFilter = (req, file, cb) => {
 //UPLOAD DO ARQUIVO
 exports.upload = multer({
     storage: storage, //LOCAL PARA SALVAR E NOME
-    fileFilter: fileFilter //FILTRO DE TIPO
+    fileFilter: fileFilter
+    //FILTRO DE TIPO
 })

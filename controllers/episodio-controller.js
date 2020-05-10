@@ -1,17 +1,15 @@
 const mysql = require('../mysql')
 
-
-
 exports.getEpisodios = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT e.idepisodios, 
-                                                 e.titleEpisodio,
-                                                 e.key_episodio,
-                                                 a.idanimes, 
-                                                 a.titleAnime
-                                            FROM episodios e
-                                      INNER JOIN animes a
-                                              ON e.animes_idanimes = a.idanimes;`)
+                                                    e.titleEpisodio,
+                                                    e.keyEpisodio,
+                                                    a.idanimes, 
+                                                    a.titleAnime
+                                               FROM episodios e
+                                         INNER JOIN animes a
+                                                 ON e.animes_idanimes = a.idanimes;`)
 
 
         const episodios = results.map(episodios => {
@@ -36,6 +34,27 @@ exports.getEpisodios = async (req, res, next) => {
         res.status(500).send({ error: error })
     }
 
+}
+
+exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`SELECT e.idepisodios, 
+                                                    e.titleEpisodio,
+                                                    e.keyEpisodio,
+                                                    a.idanimes, 
+                                                    a.titleAnime
+                                               FROM episodios e
+                                         INNER JOIN animes a
+                                                 ON e.animes_idanimes = a.idanimes
+                                                AND a.idanimes = ?`,
+            [req.params.id_animes])
+        res.status(200).send({
+            mensagem: 'Episodios do animes retornados',
+            response: results
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
 
 exports.postEpisodio = async (req, res, next) => {

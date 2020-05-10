@@ -1,4 +1,6 @@
 const mysql = require('../mysql')
+const express = require('express')
+const router = express.Router()
 
 
 exports.getAnimes = async (req, res, next) => {
@@ -18,6 +20,8 @@ exports.getAnimes = async (req, res, next) => {
                 id_anime: animes.idanimes,
                 title: animes.titleAnime,
                 description: animes.descriptionAnime,
+                key: animes.keyAnime,
+                imgAnime: animes.imgAnime,
                 page: page,
                 request: {
                     type: 'GET',
@@ -39,16 +43,23 @@ exports.getAnimes = async (req, res, next) => {
 
 exports.postAnime = async (req, res, next) => {
     try {
+        /* AQUI É DIVIDO O CAMINHO DE UPLOAD DA IMAGEM PARA ARMAZENAR NO BANCO, 
+        EXEMPLO: uploads\\anime.png, aplicando o método abaixo retorna 2 string em
+        um array ficando uploads na posição e anime.png na posição 1, logo só
+        preciso pegar a posição 1 como abaixo no 4 parâmetro passado na query */
+        filterPath = req.file.path.split('\\');
         const results = await mysql.execute(`INSERT INTO animes 
-                                            (titleAnime, descriptionAnime, imgAnime) 
-                                            VALUES (?, ?, ?)`,
-            [req.body.titleAnime, req.body.descriptionAnime, req.file.path]);
+                                            (titleAnime, descriptionAnime, keyAnime, imgAnime) 
+                                            VALUES (?, ?, ?, ?)`,
+            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, filterPath[1]]);
+
         res.status(200).send({
             mensagem: 'Anime adicionado com sucesso!',
             episodio: {
                 id: results.insertId,
                 title: req.body.title,
-                description: req.body.description
+                description: req.body.description,
+                path: req.file.path
             }
         })
     } catch (error) {
@@ -75,9 +86,9 @@ exports.getAnimeEspecifico = async (req, res, next) => {
 exports.patchAnimeEspecifico = async (req, res, next) => {
     try {
         const results = await mysql.execute(`UPDATE ANIMES 
-                                                SET titleAnime = ?, descriptionAnime = ? 
+                                                SET titleAnime = ?, descriptionAnime = ?, keyAnime = ? 
                                               WHERE idanimes = ?`,
-            [req.body.title, req.body.description, req.params.id_animes]);
+            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, req.params.id_animes]);
 
         res.status(200).send({
             mensagem: 'Anime específico alterado.',
