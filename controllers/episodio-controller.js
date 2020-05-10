@@ -41,6 +41,7 @@ exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
         const results = await mysql.execute(`SELECT e.idepisodios, 
                                                     e.titleEpisodio,
                                                     e.keyEpisodio,
+                                                    e.descriptionEpisodio,
                                                     a.idanimes, 
                                                     a.titleAnime
                                                FROM episodios e
@@ -124,7 +125,7 @@ exports.patchEpisodioEspecifico = async (req, res, next) => {
 exports.deleteEpisodioEspecifico = async (req, res, next) => {
     try {
         const results = await mysql.execute('DELETE FROM episodios WHERE idepisodios = ?',
-            [req.body.id_episodios])
+            [req.params.id_episodio])
         if (results.affectedRows !== 0) {
             res.status(200).send({
                 mensagem: 'Episodio excluído.',
