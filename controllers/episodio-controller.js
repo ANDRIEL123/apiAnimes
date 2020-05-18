@@ -59,15 +59,16 @@ exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
 }
 
 exports.postEpisodio = async (req, res, next) => {
+    filterPath = req.file.path.split('\\');
     try {
         const results = await mysql.execute(`INSERT INTO episodios
-                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, key_episodio, imgEpisodio)
+                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, keyEpisodio, imgEpisodio)
                                             VALUES (?, ?, ?, ?, ?)`,
             [req.body.titleEpisodio,
             req.body.descriptionEpisodio,
             req.body.idanime,
-            req.body.key_episodio,
-            req.file.path])
+            req.body.keyEpisodio,
+            filterPath[1]])
 
         res.status(200).send({
             mensagem: 'Episodio adicionado com sucesso!',
@@ -75,7 +76,8 @@ exports.postEpisodio = async (req, res, next) => {
                 id: results.insertId,
                 title: req.body.titleEpisodio,
                 description: req.body.descriptionEpisodio,
-                id_animeVinculado: req.body.idanime
+                id_animeVinculado: req.body.idanime,
+                path: req.file.path
             }
 
         })
