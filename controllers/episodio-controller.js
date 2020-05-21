@@ -62,7 +62,13 @@ exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
 }
 
 exports.postEpisodio = async (req, res, next) => {
-    filterPath = req.file.path.split('\\');
+    let filterPath = null
+    if (req.file) {
+        let auxfilterPath = req.file.path.split('\\');
+        filterPath = auxfilterPath[1]
+    }
+
+
     try {
         const results = await mysql.execute(`INSERT INTO episodios
                                             (titleEpisodio, descriptionEpisodio, animes_idanimes, keyEpisodio, imgEpisodio)
@@ -71,7 +77,7 @@ exports.postEpisodio = async (req, res, next) => {
             req.body.descriptionEpisodio,
             req.body.idanime,
             req.body.keyEpisodio,
-            filterPath[1]])
+                filterPath])
 
         res.status(200).send({
             mensagem: 'Episodio adicionado com sucesso!',
@@ -79,8 +85,7 @@ exports.postEpisodio = async (req, res, next) => {
                 id: results.insertId,
                 title: req.body.titleEpisodio,
                 description: req.body.descriptionEpisodio,
-                id_animeVinculado: req.body.idanime,
-                path: req.file.path
+                id_animeVinculado: req.body.idanime
             }
 
         })
@@ -113,7 +118,11 @@ exports.getEpisodioEspecifico = async (req, res, next) => {
 
 
 exports.patchEpisodioEspecifico = async (req, res, next) => {
-    filterPath = req.file.path.split('\\');
+    let filterPath = null
+    if (req.file) {
+        let auxfilterPath = req.file.path.split('\\');
+        filterPath = auxfilterPath[1]
+    }
     try {
         const results = await mysql.execute(`UPDATE EPISODIOS 
                                             SET titleEpisodio = ?, 
@@ -121,7 +130,7 @@ exports.patchEpisodioEspecifico = async (req, res, next) => {
                                                 keyEpisodio = ?, 
                                                 imgEpisodio = ?
                                           WHERE idepisodios = ?`,
-            [req.body.titleEpisodio, req.body.descriptionEpisodio, req.body.keyEpisodio, filterPath[1], req.body.idepisodio])
+            [req.body.titleEpisodio, req.body.descriptionEpisodio, req.body.keyEpisodio, filterPath, req.body.idepisodio])
 
         res.status(200).send({
             mensagem: 'Episodio específico alterado.',
