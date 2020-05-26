@@ -6,6 +6,7 @@ const uploadImgMulter = require('./metodos/multerUploadImgs')
 //RETORNA TODOS OS ANIMES
 router.get('/', AnimesController.getAnimes)
 
+//FILTRA ANIMES PELO TITLE
 router.get('/filter', AnimesController.filterAnimestitle)
 
 //RETORNA OS DADOS DE UM ANIME ESPECÍFICO
