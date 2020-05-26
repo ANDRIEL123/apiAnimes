@@ -86,6 +86,21 @@ exports.getAnimeEspecifico = async (req, res, next) => {
     }
 }
 
+exports.filterAnimestitle = async (req, res, next) => {
+    try {
+        const results = mysql.execute(`SELECT titleAnime,
+                                              descriptionAnime,
+                                              imgAnime
+                                         FROM animes
+                                        WHERE titleAnime LIKE '%?%'`)
+        res.status(200).send({
+            response: results
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
+}
+
 exports.patchAnimeEspecifico = async (req, res, next) => {
     try {
         /* AQUI É DIVIDO O CAMINHO DE UPLOAD DA IMAGEM PARA ARMAZENAR NO BANCO, 
