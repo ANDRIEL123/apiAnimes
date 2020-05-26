@@ -39,6 +39,7 @@ exports.getEpisodios = async (req, res, next) => {
 }
 
 exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
+
     try {
         const results = await mysql.execute(`SELECT e.idepisodios, 
                                                     e.titleEpisodio,

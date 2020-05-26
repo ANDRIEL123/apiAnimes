@@ -92,7 +92,7 @@ exports.filterAnimestitle = async (req, res, next) => {
         descriptionAnime,
         imgAnime
    FROM animes
-  WHERE titleAnime LIKE %a%`,
+  WHERE titleAnime LIKE '%?%'`,
             [req.body.titleAnime])
         res.status(200).send({
             response: results
