@@ -89,10 +89,10 @@ exports.getAnimeEspecifico = async (req, res, next) => {
 exports.filterAnimestitle = async (req, res, next) => {
     try {
         const results = mysql.execute(`SELECT titleAnime,
-                                              descriptionAnime,
-                                              imgAnime
-                                         FROM animes
-                                        WHERE titleAnime LIKE '%?%'`,
+        descriptionAnime,
+        imgAnime
+   FROM animes
+  WHERE titleAnime LIKE %a%`,
             [req.body.titleAnime])
         res.status(200).send({
             response: results
