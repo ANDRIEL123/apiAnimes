@@ -86,19 +86,19 @@ exports.getAnimeEspecifico = async (req, res, next) => {
     }
 }
 
-exports.filterAnimestitle = async (req, res, next) => {
+exports.filterAnimesTitle = async (req, res, next) => {
     try {
-        const results = mysql.execute(`SELECT titleAnime,
-        descriptionAnime,
-        imgAnime
-   FROM animes
-  WHERE titleAnime LIKE '%?%'`,
-            [req.body.titleAnime])
+        let titleAnime = req.body.titleAnime
+        const results = await mysql.execute(`SELECT * FROM animes 
+                                            WHERE titleAnime LIKE '%${titleAnime}%'`)
+
         res.status(200).send({
             response: results
         })
     } catch (error) {
-        res.status(500).send({ error: error })
+        res.status(500).send({
+            error: error
+        })
     }
 }
 
