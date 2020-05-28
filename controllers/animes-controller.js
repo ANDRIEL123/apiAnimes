@@ -1,44 +1,23 @@
 const mysql = require('../mysql')
-const express = require('express')
-const router = express.Router()
-
 
 exports.getAnimes = async (req, res, next) => {
+    let page = 0
+    if (Number(req.query.page) !== 1) {
+        page = (Number(req.query.page) - 1) * 10
+    }
+
     try {
-        const results = await mysql.execute("SELECT * FROM ANIMES")
-
-        let page;
-
-        const response = results.map((animes, index) => {
-            if ((index / 3) < 1) {
-                page = 1
-            } else {
-                page = parseInt((index / 3) + 1)
-            }
-
-            return {
-                id_anime: animes.idanimes,
-                title: animes.titleAnime,
-                description: animes.descriptionAnime,
-                key: animes.keyAnime,
-                imgAnime: animes.imgAnime,
-                page: page,
-                request: {
-                    type: 'GET',
-                    url: 'localhost:3000/animes/' + animes.idanimes
-                }
-            }
-        })
-
+        const results = await mysql.execute(`SELECT SQL_CALC_FOUND_ROWS * FROM ANIMES LIMIT ${page},10;`)
+        const numRegisters = await mysql.execute('SELECT FOUND_ROWS()')
         return res.status(200).send({
             mensagem: 'Retorna todos os animes',
-            response: response
+            response: results,
+            numRegisters: numRegisters[0]
         })
 
     } catch (error) {
         return res.status(500).send({ error: error })
     }
-
 }
 
 exports.postAnime = async (req, res, next) => {
@@ -88,7 +67,7 @@ exports.getAnimeEspecifico = async (req, res, next) => {
 
 exports.filterAnimesTitle = async (req, res, next) => {
     try {
-        let titleAnime = req.body.titleAnime
+        let titleAnime = req.query.titleAnime
         const results = await mysql.execute(`SELECT * FROM animes 
                                             WHERE titleAnime LIKE '%${titleAnime}%'`)
 
