@@ -6,6 +6,7 @@ const cors = require('cors')
 const rotaEpisodios = require('./routes/episodio');
 const rotaAnimes = require('./routes/animes');
 const rotaUsuarios = require('./routes/usuario');
+const rotaCategorias = require('./routes/categorias')
 
 app.use(morgan('dev')) //GERA O LOG DO REQUEST HTTP
 
@@ -18,6 +19,7 @@ app.use(bodyParse.json()) //JSON de entrada no body
 app.use(cors(/*origin = "http://localhost:3001/" */))
 
 
+app.use('/categorias', rotaCategorias);
 app.use('/episodios', rotaEpisodios);
 app.use('/animes', rotaAnimes);
 app.use('/usuarios', rotaUsuarios);
