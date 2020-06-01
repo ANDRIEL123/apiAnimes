@@ -27,7 +27,6 @@ app.use('/uploads', express.static('uploads'))
 
 
 // QUANDO NÃO ENCONTRA ROTA, ENTRA AQUI:
-
 app.use((req, res, next) => {
     const erro = new Error('Não encontrado')
     erro.status = 404

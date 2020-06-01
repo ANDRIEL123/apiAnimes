@@ -9,6 +9,7 @@ exports.getAnimes = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT SQL_CALC_FOUND_ROWS * FROM ANIMES LIMIT ${page},10;`)
         const numRegisters = await mysql.execute('SELECT FOUND_ROWS()')
+
         return res.status(200).send({
             mensagem: 'Retorna todos os animes',
             response: results,
@@ -21,6 +22,18 @@ exports.getAnimes = async (req, res, next) => {
 }
 
 exports.postAnime = async (req, res, next) => {
+    let categoria = []
+    const categoriasAux = req.body.categorias
+    console.log(typeof (categoriasAux))
+    if (typeof (categoriasAux) === 'string') {
+        let categoriaAux = categoriasAux.split(",")
+        categoria = categoriaAux
+    } else {
+        categoriasAux.map(value => {
+            categoria.push(value)
+        })
+    }
+
     try {
         /* AQUI É DIVIDO O CAMINHO DE UPLOAD DA IMAGEM PARA ARMAZENAR NO BANCO, 
         EXEMPLO: uploads\\anime.png, aplicando o método abaixo retorna 2 string em
@@ -32,10 +45,22 @@ exports.postAnime = async (req, res, next) => {
             filterPath = auxfilterPath[1]
         }
         const results = await mysql.execute(`INSERT INTO animes 
-                                            (titleAnime, descriptionAnime, keyAnime, imgAnime, categoriaAnime) 
+                                            (titleAnime, descriptionAnime, keyAnime, imgAnime) 
                                             VALUES (?, ?, ?, ?)`,
-            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, filterPath, req.body.categoriaAnime]);
+            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, filterPath]);
 
+        //Pego o valor do último ID inserido que é o acima
+        const lastID = await mysql.execute(`SELECT last_insert_id()`);
+        let id = Object.values(lastID[0])[0]
+
+        //Query para inserção das categorias, na tabela categorias_animes
+        //Só insiro se tiver alguma categoria
+        if (categoria.length !== 0) {
+            let query = `INSERT INTO categorias_animes (idanime, idcategoria) VALUES `
+            await mysql.execute(query + categoria.map(num => {
+                return `(${id},${num})`
+            }))
+        }
         res.status(200).send({
             mensagem: 'Anime adicionado com sucesso!',
             episodio: {
