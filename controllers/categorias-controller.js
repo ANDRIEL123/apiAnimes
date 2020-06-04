@@ -15,7 +15,7 @@ exports.getCategorias = async (req, res, next) => {
 exports.getCategoriaEspecifica = async (req, res, next) => {
     try {
         const response = await mysql.execute('SELECT * FROM categorias WHERE idcategorias = ?',
-            [id_categoria])
+            [req.params.id_categoria])
 
         return res.status(200).send({
             response: response
@@ -30,7 +30,7 @@ exports.postCategorias = async (req, res, next) => {
         const response = await mysql.execute(`INSERT INTO categorias 
                                         (titleCategoria, descriptionCategoria)
                                         VALUES (?,?)`,
-            [req.body.titleCategoria], req.body.descriptionCategoria)
+            [req.body.titleCategoria, req.body.descriptionCategoria])
 
         return res.status(200).send({
             response: response
@@ -46,7 +46,7 @@ exports.patchCategorias = async (req, res, next) => {
                                         SET titleCategoria = ?,
                                             descriptionCategoria = ?
                                       WHERE idcategorias = ?`,
-            [req.body.titleCategoria], req.body.descriptionCategoria, req.params.id_categoria)
+            [req.body.titleCategoria, req.body.descriptionCategoria, req.params.id_categoria])
 
         return res.status(200).send({
             response: response
