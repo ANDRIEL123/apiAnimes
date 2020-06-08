@@ -7,29 +7,15 @@ exports.getEpisodios = async (req, res, next) => {
                                                     e.keyEpisodio,
                                                     a.idanimes, 
                                                     a.titleAnime,
-                                                    e.imgEpisodio
+                                                    e.imgEpisodio,
+                                                    a.imgAnime
                                                FROM episodios e
                                          INNER JOIN animes a
                                                  ON e.animes_idanimes = a.idanimes;`)
 
-
-        const episodios = results.map(episodios => {
-            return {
-                idEpisodio: episodios.idepisodios,
-                titleEpisodios: episodios.titleEpisodios,
-                idanimes: episodios.idanimes,
-                titleAnimes: episodios.titleAnimes,
-                key: episodios.key,
-                imgEpisodio: episodios.imgEpisodio,
-                request: {
-                    type: "GET",
-                    urlEpisodios: `localhost:3000/episodios/${episodios.idepisodios}`
-                }
-            }
-        })
         res.status(200).send({
             mensagem: 'Retorna todos os episodios',
-            response: episodios
+            response: results
 
         })
     } catch (error) {
@@ -47,7 +33,8 @@ exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
                                                     e.descriptionEpisodio,
                                                     a.idanimes, 
                                                     a.titleAnime,
-                                                    e.imgEpisodio
+                                                    e.imgEpisodio,
+                                                    a.imgAnime
                                                FROM episodios e
                                          INNER JOIN animes a
                                                  ON e.animes_idanimes = a.idanimes
