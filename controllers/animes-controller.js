@@ -45,9 +45,9 @@ exports.postAnime = async (req, res, next) => {
             filterPath = auxfilterPath[1]
         }
         const results = await mysql.execute(`INSERT INTO animes 
-                                            (titleAnime, descriptionAnime, keyAnime, imgAnime) 
-                                            VALUES (?, ?, ?, ?)`,
-            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, filterPath]);
+                                            (titleAnime, descriptionAnime, imgAnime, situacaoAnime, lancamentoAnime) 
+                                            VALUES (?, ?, ?, ?, ?)`,
+            [req.body.titleAnime, req.body.descriptionAnime, filterPath, req.body.situacaoAnime, req.body.lancamentoAnime]);
 
         //Pego o valor do último ID inserido que é o acima
         const lastID = await mysql.execute(`SELECT last_insert_id()`);
@@ -119,14 +119,21 @@ exports.patchAnimeEspecifico = async (req, res, next) => {
             filterPath = auxfilterPath[1]
 
             await mysql.execute(`UPDATE ANIMES 
-                                                SET titleAnime = ?, descriptionAnime = ?, imgAnime = ? 
-                                              WHERE idanimes = ?`,
-                [req.body.titleAnime, req.body.descriptionAnime, filterPath, req.params.id_animes]);
+                                    SET titleAnime = ?, 
+                                        descriptionAnime = ?, 
+                                        imgAnime = ?, 
+                                        situacaoAnime = ?, 
+                                        lancamentoAnime = ?
+                                  WHERE idanimes = ?`,
+                [req.body.titleAnime, req.body.descriptionAnime, filterPath, req.body.situacaoAnime, req.body.lancamentoAnime, req.params.id_animes]);
         } else {
             await mysql.execute(`UPDATE ANIMES 
-                                                SET titleAnime = ?, descriptionAnime = ?
-                                              WHERE idanimes = ?`,
-                [req.body.titleAnime, req.body.descriptionAnime, req.params.id_animes]);
+                                    SET titleAnime = ?, 
+                                        descriptionAnime = ?, 
+                                        situacaoAnime = ?, 
+                                        lancamentoAnime = ?
+                                  WHERE idanimes = ?`,
+                [req.body.titleAnime, req.body.descriptionAnime, req.body.situacaoAnime, req.body.lancamentoAnime, req.params.id_animes]);
         }
         res.status(200).send({
             mensagem: 'Anime específico alterado.',
