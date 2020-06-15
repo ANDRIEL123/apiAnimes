@@ -39,9 +39,9 @@ exports.postAnime = async (req, res, next) => {
         EXEMPLO: uploads\\anime.png, aplicando o método abaixo retorna 2 string em
         um array ficando uploads na posição e anime.png na posição 1, logo só
         preciso pegar a posição 1 como abaixo no 4 parâmetro passado na query */
-        let filterPath = null
-        if (req.file) {
-            let auxfilterPath = req.file.path.split('\\');
+        let auxfilterPath = null
+        if (req.file !== undefined) {
+            auxfilterPath = req.file.path.split('\\');
             filterPath = auxfilterPath[1]
         }
         const results = await mysql.execute(`INSERT INTO animes 
@@ -113,15 +113,21 @@ exports.patchAnimeEspecifico = async (req, res, next) => {
         um array ficando uploads na posição e anime.png na posição 1, logo só
         preciso pegar a posição 1 como abaixo no 4 parâmetro passado na query */
         let filterPath = null
+        const results = {}
         if (req.file) {
             let auxfilterPath = req.file.path.split('\\');
             filterPath = auxfilterPath[1]
-        }
-        const results = await mysql.execute(`UPDATE ANIMES 
-                                                SET titleAnime = ?, descriptionAnime = ?, keyAnime = ?, imgAnime = ? 
-                                              WHERE idanimes = ?`,
-            [req.body.titleAnime, req.body.descriptionAnime, req.body.keyAnime, filterPath, req.params.id_animes]);
 
+            await mysql.execute(`UPDATE ANIMES 
+                                                SET titleAnime = ?, descriptionAnime = ?, imgAnime = ? 
+                                              WHERE idanimes = ?`,
+                [req.body.titleAnime, req.body.descriptionAnime, filterPath, req.params.id_animes]);
+        } else {
+            await mysql.execute(`UPDATE ANIMES 
+                                                SET titleAnime = ?, descriptionAnime = ?
+                                              WHERE idanimes = ?`,
+                [req.body.titleAnime, req.body.descriptionAnime, req.params.id_animes]);
+        }
         res.status(200).send({
             mensagem: 'Anime específico alterado.',
             response: results

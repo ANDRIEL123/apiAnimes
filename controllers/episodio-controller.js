@@ -4,7 +4,7 @@ exports.getEpisodios = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT e.idepisodios, 
                                                     e.titleEpisodio,
-                                                    e.keyEpisodio,
+                                                    e.urlVideo,
                                                     a.idanimes, 
                                                     a.titleAnime,
                                                     e.imgEpisodio,
@@ -29,7 +29,7 @@ exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT e.idepisodios, 
                                                     e.titleEpisodio,
-                                                    e.keyEpisodio,
+                                                    e.urlVideo,
                                                     e.descriptionEpisodio,
                                                     a.idanimes, 
                                                     a.titleAnime,
@@ -59,12 +59,12 @@ exports.postEpisodio = async (req, res, next) => {
 
     try {
         const results = await mysql.execute(`INSERT INTO episodios
-                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, keyEpisodio, imgEpisodio)
+                                            (titleEpisodio, descriptionEpisodio, animes_idanimes, urlVideo, imgEpisodio)
                                             VALUES (?, ?, ?, ?, ?)`,
             [req.body.titleEpisodio,
             req.body.descriptionEpisodio,
             req.body.idanime,
-            req.body.keyEpisodio,
+            req.body.urlVideo,
                 filterPath])
 
         res.status(200).send({
@@ -86,7 +86,7 @@ exports.getEpisodioEspecifico = async (req, res, next) => {
     try {
         const results = await mysql.execute(`SELECT e.idepisodios,
                                                     e.titleEpisodio,
-                                                    e.keyEpisodio,
+                                                    e.urlVideo,
                                                     a.idanimes,
                                                     a.titleAnime
                                                FROM episodios e
@@ -112,13 +112,14 @@ exports.patchEpisodioEspecifico = async (req, res, next) => {
         filterPath = auxfilterPath[1]
     }
     try {
+
         const results = await mysql.execute(`UPDATE EPISODIOS 
                                             SET titleEpisodio = ?, 
                                                 descriptionEpisodio = ?, 
-                                                keyEpisodio = ?, 
+                                                urlVideo = ?, 
                                                 imgEpisodio = ?
                                           WHERE idepisodios = ?`,
-            [req.body.titleEpisodio, req.body.descriptionEpisodio, req.body.keyEpisodio, filterPath, req.body.idepisodio])
+            [req.body.titleEpisodio, req.body.descriptionEpisodio, req.body.urlVideo, filterPath, req.body.idepisodio])
 
         res.status(200).send({
             mensagem: 'Episodio específico alterado.',
