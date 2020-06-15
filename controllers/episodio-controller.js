@@ -21,7 +21,30 @@ exports.getEpisodios = async (req, res, next) => {
     } catch (error) {
         res.status(500).send({ error: error })
     }
+}
 
+exports.getEpisodiosLimit24 = async (req, res, next) => {
+    try {
+        const results = await mysql.execute(`SELECT e.idepisodios, 
+                                                    e.titleEpisodio,
+                                                    e.urlVideo,
+                                                    e.descriptionEpisodio,
+                                                    a.idanimes, 
+                                                    a.titleAnime,
+                                                    e.imgEpisodio,
+                                                    a.imgAnime
+                                                    FROM episodios e
+                                                    INNER JOIN animes a
+                                                       ON e.animes_idanimes = a.idanimes
+                                                 ORDER BY idepisodios DESC
+                                                 limit 24`)
+        res.status(200).send({
+            mensagem: 'Últimos 24 epispódios retornados',
+            response: results
+        })
+    } catch (error) {
+        res.status(500).send({ error: error })
+    }
 }
 
 exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {

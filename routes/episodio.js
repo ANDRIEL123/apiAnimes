@@ -7,6 +7,9 @@ const uploadImgMulter = require('./metodos/multerUploadImgs').upload
 //RETORNA TODOS OS EPISODIOS
 router.get('/', episodioController.getEpisodios)
 
+//RETORNA OS ÚLTIMOS 24 EPISÓDIOS
+router.get('/limit24', episodioController.getEpisodiosLimit24)
+
 //RETORNA TODOS OS EPISODIOS DE UM ANIME ESPECIFICO
 router.get('/animes/:id_animes', episodioController.getEpisodiosAnimeEspecifico)
 
