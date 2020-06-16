@@ -61,7 +61,8 @@ exports.getEpisodiosAnimeEspecifico = async (req, res, next) => {
                                                FROM episodios e
                                          INNER JOIN animes a
                                                  ON e.animes_idanimes = a.idanimes
-                                                AND a.idanimes = ?`,
+                                                AND a.idanimes = ?
+                                                ORDER BY e.titleEpisodio`,
             [req.params.id_animes])
         res.status(200).send({
             mensagem: 'Episodios do animes retornados',
