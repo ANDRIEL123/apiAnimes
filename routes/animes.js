@@ -6,6 +6,9 @@ const uploadImgMulter = require('./metodos/multerUploadImgs')
 //RETORNA TODOS OS ANIMES
 router.get('/', AnimesController.getAnimes)
 
+//RETORNA TODOS OS ANIMES PAGINADOS 'EXCLUSIVO FRONT PAINEL'
+router.get('/pagination', AnimesController.getAnimesPagination)
+
 //FILTRA ANIMES PELO TITLE
 router.get('/filter/animes', AnimesController.filterAnimesTitle)
 

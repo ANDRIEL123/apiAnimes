@@ -1,6 +1,22 @@
 const mysql = require('../mysql')
 
 exports.getAnimes = async (req, res, next) => {
+
+    try {
+        const results = await mysql.execute(`SELECT * FROM ANIMES`)
+
+
+        return res.status(200).send({
+            mensagem: 'Retorna todos os animes',
+            response: results
+        })
+
+    } catch (error) {
+        return res.status(500).send({ error: error })
+    }
+}
+
+exports.getAnimesPagination = async (req, res, next) => {
     let page = 0
     if (Number(req.query.page) !== 1) {
         page = (Number(req.query.page) - 1) * 10
