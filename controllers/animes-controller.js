@@ -22,16 +22,18 @@ exports.getAnimes = async (req, res, next) => {
 }
 
 exports.postAnime = async (req, res, next) => {
-    let categoria = []
-    const categoriasAux = req.body.categorias
-    console.log(typeof (categoriasAux))
-    if (typeof (categoriasAux) === 'string') {
-        let categoriaAux = categoriasAux.split(",")
-        categoria = categoriaAux
-    } else {
-        categoriasAux.map(value => {
-            categoria.push(value)
-        })
+    if (req.body.categorias !== '') {
+        let categoria = []
+
+        const categoriasAux = req.body.categorias
+        if (typeof (categoriasAux) === 'string') {
+            let categoriaAux = categoriasAux.split(",")
+            categoria = categoriaAux
+        } else {
+            categoriasAux.map(value => {
+                categoria.push(value)
+            })
+        }
     }
 
     try {
@@ -40,6 +42,7 @@ exports.postAnime = async (req, res, next) => {
         um array ficando uploads na posição e anime.png na posição 1, logo só
         preciso pegar a posição 1 como abaixo no 4 parâmetro passado na query */
         let auxfilterPath = null
+        let filterPath = null
         if (req.file !== undefined) {
             auxfilterPath = req.file.path.split('\\');
             filterPath = auxfilterPath[1]
@@ -50,17 +53,19 @@ exports.postAnime = async (req, res, next) => {
             [req.body.titleAnime, req.body.descriptionAnime, filterPath, req.body.situacaoAnime, req.body.lancamentoAnime]);
 
         //Pego o valor do último ID inserido que é o acima
-        const lastID = await mysql.execute(`SELECT last_insert_id()`);
-        let id = Object.values(lastID[0])[0]
+        if (req.body.categorias !== '') {
+            const lastID = await mysql.execute(`SELECT last_insert_id()`);
+            let id = Object.values(lastID[0])[0]
 
-        //Query para inserção das categorias, na tabela categorias_animes
-        //Só insiro se tiver alguma categoria
-        if (categoria.length !== 0) {
+            //Query para inserção das categorias, na tabela categorias_animes
+            //Só insiro se tiver alguma categoria
+
             let query = `INSERT INTO categorias_animes (idanime, idcategoria) VALUES `
             await mysql.execute(query + categoria.map(num => {
                 return `(${id},${num})`
             }))
         }
+
         res.status(200).send({
             mensagem: 'Anime adicionado com sucesso!',
             episodio: {
