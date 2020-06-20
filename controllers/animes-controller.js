@@ -1,18 +1,15 @@
 const mysql = require('../mysql')
 
 exports.getAnimes = async (req, res, next) => {
-
     try {
-        const results = await mysql.execute(`SELECT * FROM ANIMES`)
+        const results = await mysql.execute(`SELECT * FROM animes`)
 
-
-        return res.status(200).send({
+        res.status(200).send({
             mensagem: 'Retorna todos os animes',
             response: results
         })
-
     } catch (error) {
-        return res.status(500).send({ error: error })
+        res.status(500).send({ error: error })
     }
 }
 
@@ -26,14 +23,14 @@ exports.getAnimesPagination = async (req, res, next) => {
         const results = await mysql.execute(`SELECT SQL_CALC_FOUND_ROWS * FROM ANIMES LIMIT ${page},10;`)
         const numRegisters = await mysql.execute('SELECT FOUND_ROWS()')
 
-        return res.status(200).send({
+        res.status(200).send({
             mensagem: 'Retorna todos os animes',
             response: results,
             numRegisters: numRegisters[0]
         })
 
     } catch (error) {
-        return res.status(500).send({ error: error })
+        res.status(500).send({ error: error })
     }
 }
 

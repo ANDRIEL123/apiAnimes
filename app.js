@@ -7,6 +7,7 @@ const rotaEpisodios = require('./routes/episodio');
 const rotaAnimes = require('./routes/animes');
 const rotaUsuarios = require('./routes/usuario');
 const rotaCategorias = require('./routes/categorias')
+const request = require('request')
 
 app.use(morgan('dev')) //GERA O LOG DO REQUEST HTTP
 

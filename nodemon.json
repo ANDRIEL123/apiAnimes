@@ -3,7 +3,7 @@
         "MYSQL_USER": "root",
         "MYSQL_PASSWORD": "root",
         "MYSQL_DATABASE": "modelanimes",
-        "MYSQL_HOST": "localhost",
+        "MYSQL_HOST": "34.95.243.29",
         "MYSQL_PORT": 3306
     },
     "message": {
