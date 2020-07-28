@@ -2,7 +2,7 @@ const mysql = require('../mysql')
 
 exports.getAnimes = async (req, res, next) => {
     try {
-        const results = await mysql.execute(`SELECT * FROM animes`)
+        const results = await mysql.execute(`SELECT * FROM animes ORDER BY titleAnime ASC`)
 
         res.status(200).send({
             mensagem: 'Retorna todos os animes',
