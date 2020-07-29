@@ -35,8 +35,8 @@ exports.getAnimesPagination = async (req, res, next) => {
 }
 
 exports.postAnime = async (req, res, next) => {
+    let categoria = []
     if (req.body.categorias !== '') {
-        let categoria = []
 
         const categoriasAux = req.body.categorias
         if (typeof (categoriasAux) === 'string') {
@@ -48,6 +48,8 @@ exports.postAnime = async (req, res, next) => {
             })
         }
     }
+
+    console.log(req.body.categorias)
 
     try {
         /* AQUI É DIVIDO O CAMINHO DE UPLOAD DA IMAGEM PARA ARMAZENAR NO BANCO, 
